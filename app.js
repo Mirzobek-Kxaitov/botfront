@@ -257,12 +257,32 @@ function showTimeSection() {
 
 // Show selected info
 function showSelectedInfo() {
-    document.getElementById('selected-info').style.display = 'block';
+    const selectedInfo = document.getElementById('selected-info');
+    if (selectedInfo) {
+        selectedInfo.style.display = 'block';
+        // Smooth scroll to selected info
+        setTimeout(() => {
+            selectedInfo.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'nearest' 
+            });
+        }, 200);
+    }
 }
 
 // Show confirm button
 function showConfirmButton() {
-    document.getElementById('confirm-btn').style.display = 'block';
+    const confirmBtn = document.getElementById('confirm-btn');
+    if (confirmBtn) {
+        confirmBtn.style.display = 'block';
+        // Smooth scroll to confirm button
+        setTimeout(() => {
+            confirmBtn.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'nearest' 
+            });
+        }, 400);
+    }
 }
 
 // Setup quick date buttons
