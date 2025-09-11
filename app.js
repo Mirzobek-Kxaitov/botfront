@@ -5,7 +5,7 @@ tg.expand();
 // Global variables
 let selectedDate = null;
 let selectedTime = null;
-const API_BASE_URL = 'https://overluscious-unbusily-ralph.ngrok-free.app'; // Production da o'zgartiriladi
+const API_BASE_URL = 'https://46.62.172.9:8001'; // Production da o'zgartiriladi
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
