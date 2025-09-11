@@ -1,65 +1,364 @@
 <!DOCTYPE html>
 <html lang="uz">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sartaroshxona - Bron qilish</title>
+    <title>✂️ Elite Barber - Bron qilish</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gold: #D4AF37;
+            --primary-dark: #1a1a1a;
+            --secondary-dark: #2d2d2d;
+            --accent-gold: #F4E4BC;
+            --text-light: #f5f5f5;
+            --text-gray: #888;
+        }
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            min-height: 100vh;
+        }
+        
+        .gold-gradient {
+            background: linear-gradient(135deg, #D4AF37 0%, #F4E4BC 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .text-gold {
+            color: #D4AF37;
+        }
+        
+        .border-gold {
+            border-color: #D4AF37;
+        }
+        
+        .ring-gold {
+            --tw-ring-color: #D4AF37;
+        }
+        
+        .to-gold {
+            --tw-gradient-to: #D4AF37;
+        }
+        
+        .text-text-light {
+            color: #f5f5f5;
+        }
+        
+        .text-text-gray {
+            color: #888;
+        }
+        
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37 0%, #F4E4BC 100%);
+            color: #1a1a1a;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+        
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5);
+        }
+        
+        .btn-outline-gold {
+            border: 2px solid #D4AF37;
+            color: #D4AF37;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-gold:hover {
+            background: #D4AF37;
+            color: #1a1a1a;
+            transform: translateY(-2px);
+        }
+        
+        .time-slot {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            color: #f5f5f5;
+            transition: all 0.3s ease;
+        }
+        
+        .time-slot:hover {
+            border-color: #D4AF37;
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .time-slot.selected {
+            background: linear-gradient(135deg, #D4AF37 0%, #F4E4BC 100%);
+            color: #1a1a1a;
+            border-color: #D4AF37;
+        }
+        
+        .calendar-day {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #f5f5f5;
+            transition: all 0.3s ease;
+        }
+        
+        .calendar-day:hover:not(.disabled) {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: #D4AF37;
+            transform: scale(1.05);
+        }
+        
+        .calendar-day.selected {
+            background: linear-gradient(135deg, #D4AF37 0%, #F4E4BC 100%);
+            color: #1a1a1a;
+            border-color: #D4AF37;
+        }
+        
+        .calendar-day.disabled {
+            background: rgba(255, 255, 255, 0.02);
+            color: #444;
+            cursor: not-allowed;
+        }
+        
+        .shine-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .shine-effect::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .shine-effect:hover::before {
+            left: 100%;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
+        .loading-spinner {
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #D4AF37;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.75rem;
+            }
+            
+            .text-4xl {
+                font-size: 2.5rem;
+            }
+            
+            .text-2xl {
+                font-size: 1.5rem;
+            }
+            
+            .p-6 {
+                padding: 1rem;
+            }
+            
+            .calendar-day {
+                min-height: 2.5rem;
+                padding: 0.5rem;
+            }
+            
+            .time-slot {
+                min-height: 3rem;
+                padding: 0.75rem;
+            }
+            
+            .gold-gradient {
+                padding: 1.5rem;
+            }
+        }
+        
+        /* Telegram Web App specific styles */
+        .tg-viewport {
+            --tg-theme-bg-color: var(--primary-dark);
+            --tg-theme-text-color: var(--text-light);
+            --tg-theme-button-color: var(--primary-gold);
+            --tg-theme-button-text-color: var(--primary-dark);
+        }
+    </style>
 </head>
-<body class="bg-gray-50">
+
+<body>
     <div class="min-h-screen p-4">
-        <div class="max-w-md mx-auto bg-white rounded-lg shadow-md">
+        <!-- Background decorative elements -->
+        <div class="fixed inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-20 left-10 w-32 h-32 border-2 border-gold opacity-10 rounded-full"></div>
+            <div class="absolute bottom-20 right-10 w-24 h-24 border border-gold opacity-20 rounded-full"></div>
+            <div class="absolute top-1/2 right-20 w-16 h-16 border border-gold opacity-15 rounded-full"></div>
+        </div>
+        
+        <div class="max-w-md mx-auto glass-effect rounded-2xl shadow-2xl overflow-hidden fade-in-up">
             <!-- Header -->
-            <div class="bg-blue-600 text-white p-6 rounded-t-lg">
-                <h1 class="text-xl font-bold text-center">✂️ Sartaroshxona</h1>
-                <p class="text-center text-blue-100 mt-1">Bron qilish tizimi</p>
+            <div class="gold-gradient p-6 text-center relative">
+                <div class="absolute inset-0 opacity-20">
+                    <svg class="w-full h-full" viewBox="0 0 100 100" fill="none">
+                        <defs>
+                            <pattern id="barber-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                                <circle cx="10" cy="10" r="1" fill="currentColor" opacity="0.3"/>
+                            </pattern>
+                        </defs>
+                        <rect width="100" height="100" fill="url(#barber-pattern)"/>
+                    </svg>
+                </div>
+                
+                <div class="relative z-10">
+                    <div class="text-4xl mb-2">✂️</div>
+                    <h1 class="text-2xl font-bold text-primary-dark mb-1">ELITE BARBER</h1>
+                    <p class="text-primary-dark opacity-80 text-sm font-medium">Professional Grooming</p>
+                </div>
+                
+                <!-- Decorative line -->
+                <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-primary-dark opacity-30"></div>
             </div>
 
             <!-- Content -->
             <div class="p-6">
-                <!-- Step 1: Date Selection -->
-                <div id="date-section" class="mb-6">
-                    <h2 class="text-lg font-semibold mb-3">📅 Sanani tanlang:</h2>
-                    <div class="grid grid-cols-7 gap-1 mb-4">
-                        <div class="text-center text-sm font-medium text-gray-500 p-2">Du</div>
-                        <div class="text-center text-sm font-medium text-gray-500 p-2">Se</div>
-                        <div class="text-center text-sm font-medium text-gray-500 p-2">Cho</div>
-                        <div class="text-center text-sm font-medium text-gray-500 p-2">Pa</div>
-                        <div class="text-center text-sm font-medium text-gray-500 p-2">Ju</div>
-                        <div class="text-center text-sm font-medium text-gray-500 p-2">Sha</div>
-                        <div class="text-center text-sm font-medium text-gray-500 p-2">Ya</div>
+                <!-- Quick Date Selection -->
+                <div id="quick-date-section" class="mb-8 fade-in-up" style="animation-delay: 0.2s">
+                    <h2 class="text-xl font-semibold mb-4 text-text-light flex items-center">
+                        <span class="text-2xl mr-2">📅</span>
+                        Tezkor tanlash
+                    </h2>
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <button id="today-btn" class="btn-gold p-4 rounded-xl font-medium transition shine-effect">
+                            <div class="text-lg mb-1">🌅</div>
+                            <div class="font-semibold">Bugun</div>
+                        </button>
+                        <button id="tomorrow-btn" class="btn-outline-gold p-4 rounded-xl font-medium transition shine-effect">
+                            <div class="text-lg mb-1">🌄</div>
+                            <div class="font-semibold">Ertaga</div>
+                        </button>
                     </div>
-                    <div id="calendar-dates" class="grid grid-cols-7 gap-1"></div>
+                    <div class="text-center mb-4">
+                        <div class="inline-flex items-center">
+                            <div class="w-12 h-px bg-gradient-to-r from-transparent to-gold"></div>
+                            <span class="text-text-gray mx-4 text-sm font-medium">yoki</span>
+                            <div class="w-12 h-px bg-gradient-to-l from-transparent to-gold"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 1: Date Selection -->
+                <div id="date-section" class="mb-8 fade-in-up" style="animation-delay: 0.4s">
+                    <h2 class="text-xl font-semibold mb-4 text-text-light flex items-center">
+                        <span class="text-2xl mr-2">📅</span>
+                        Boshqa kun tanlash
+                    </h2>
+                    <div class="bg-secondary-dark rounded-xl p-4 glass-effect">
+                        <div class="grid grid-cols-7 gap-1 mb-4">
+                            <div class="text-center text-xs font-semibold text-gold p-2">Du</div>
+                            <div class="text-center text-xs font-semibold text-gold p-2">Se</div>
+                            <div class="text-center text-xs font-semibold text-gold p-2">Cho</div>
+                            <div class="text-center text-xs font-semibold text-gold p-2">Pa</div>
+                            <div class="text-center text-xs font-semibold text-gold p-2">Ju</div>
+                            <div class="text-center text-xs font-semibold text-gold p-2">Sha</div>
+                            <div class="text-center text-xs font-semibold text-gold p-2">Ya</div>
+                        </div>
+                        <div id="calendar-dates" class="grid grid-cols-7 gap-1"></div>
+                    </div>
                 </div>
 
                 <!-- Step 2: Time Selection -->
-                <div id="time-section" class="mb-6" style="display: none;">
-                    <h2 class="text-lg font-semibold mb-3">⏰ Vaqtni tanlang:</h2>
-                    <div id="time-slots" class="grid grid-cols-3 gap-2"></div>
+                <div id="time-section" class="mb-8 fade-in-up" style="display: none; animation-delay: 0.6s">
+                    <h2 class="text-xl font-semibold mb-4 text-text-light flex items-center">
+                        <span class="text-2xl mr-2">⏰</span>
+                        Vaqtni tanlang
+                    </h2>
+                    <div class="bg-secondary-dark rounded-xl p-4 glass-effect">
+                        <div id="time-slots" class="grid grid-cols-3 gap-3"></div>
+                    </div>
                 </div>
 
                 <!-- Selected Info -->
-                <div id="selected-info" class="bg-gray-100 p-4 rounded-lg mb-6" style="display: none;">
-                    <h3 class="font-semibold mb-2">Tanlangan ma'lumotlar:</h3>
-                    <p class="text-sm"><span class="font-medium">Sana:</span> <span id="selected-date"></span></p>
-                    <p class="text-sm"><span class="font-medium">Vaqt:</span> <span id="selected-time"></span></p>
+                <div id="selected-info" class="glass-effect p-6 rounded-xl mb-6 fade-in-up" style="display: none; animation-delay: 0.8s">
+                    <div class="text-center">
+                        <div class="text-3xl mb-3">💫</div>
+                        <h3 class="font-bold text-lg mb-4 text-text-light">Tanlangan ma'lumotlar</h3>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-center text-text-light">
+                                <span class="text-gold mr-2">📅</span>
+                                <span class="font-medium">Sana:</span>
+                                <span id="selected-date" class="ml-2 text-gold font-semibold"></span>
+                            </div>
+                            <div class="flex items-center justify-center text-text-light">
+                                <span class="text-gold mr-2">⏰</span>
+                                <span class="font-medium">Vaqt:</span>
+                                <span id="selected-time" class="ml-2 text-gold font-semibold"></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Confirm Button -->
-                <button id="confirm-btn" class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition" style="display: none;">
-                    ✅ Bron qilishni tasdiqlash
+                <button id="confirm-btn"
+                    class="w-full btn-gold py-4 rounded-xl font-bold text-lg shine-effect fade-in-up"
+                    style="display: none; animation-delay: 1s">
+                    <div class="flex items-center justify-center">
+                        <span class="text-2xl mr-2">✨</span>
+                        Bron qilishni tasdiqlash
+                    </div>
                 </button>
 
                 <!-- Loading -->
-                <div id="loading" class="text-center py-8" style="display: none;">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                    <p class="text-gray-500 mt-2">Yuklanmoqda...</p>
+                <div id="loading" class="text-center py-12" style="display: none;">
+                    <div class="loading-spinner mx-auto mb-4"></div>
+                    <p class="text-text-light font-medium">Yuklanmoqda...</p>
                 </div>
             </div>
+            
+            <!-- Footer decoration -->
+            <div class="h-2 gold-gradient"></div>
         </div>
     </div>
 
     <script src="app.js"></script>
 </body>
+
 </html>

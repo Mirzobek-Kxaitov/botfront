@@ -2,15 +2,24 @@
 let tg = window.Telegram.WebApp;
 tg.expand();
 
+// Set theme colors
+if (tg.themeParams) {
+    document.documentElement.style.setProperty('--tg-theme-bg-color', '#1a1a1a');
+    document.documentElement.style.setProperty('--tg-theme-text-color', '#f5f5f5');
+    document.documentElement.style.setProperty('--tg-theme-button-color', '#D4AF37');
+    document.documentElement.style.setProperty('--tg-theme-button-text-color', '#1a1a1a');
+}
+
 // Global variables
 let selectedDate = null;
 let selectedTime = null;
-const API_BASE_URL = 'https://46.62.172.9:8001'; // Production da o'zgartiriladi
+const API_BASE_URL = 'https://e55c22b9ef96.ngrok-free.app'; // Ngrok tunnel
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
     generateCalendar();
     setupEventListeners();
+    setupQuickDateButtons();
 });
 
 // Generate calendar for current and next month
@@ -44,11 +53,9 @@ function generateCalendar() {
         const isPastDate = date < today && !isToday;
         
         const dayElement = document.createElement('div');
-        dayElement.className = `p-2 text-center cursor-pointer rounded-lg transition ${
-            isPastDate 
-                ? 'text-gray-300 cursor-not-allowed' 
-                : 'text-gray-700 hover:bg-blue-100'
-        } ${isToday ? 'bg-blue-100 font-semibold' : ''}`;
+        dayElement.className = `calendar-day p-3 text-center cursor-pointer rounded-lg font-medium ${
+            isPastDate ? 'disabled' : ''
+        } ${isToday ? 'ring-2 ring-gold' : ''}`;
         
         dayElement.textContent = day;
         dayElement.dataset.date = dateStr;
@@ -71,7 +78,7 @@ function generateCalendar() {
         const dateStr = formatDate(date);
         
         const dayElement = document.createElement('div');
-        dayElement.className = 'p-2 text-center cursor-pointer rounded-lg transition text-gray-700 hover:bg-blue-100';
+        dayElement.className = 'calendar-day p-3 text-center cursor-pointer rounded-lg font-medium opacity-60';
         dayElement.textContent = day;
         dayElement.dataset.date = dateStr;
         
@@ -94,11 +101,11 @@ function formatDate(date) {
 function selectDate(dateStr, element) {
     // Remove previous selection
     document.querySelectorAll('[data-date]').forEach(el => {
-        el.classList.remove('bg-blue-600', 'text-white');
+        el.classList.remove('selected');
     });
     
     // Add selection to clicked element
-    element.classList.add('bg-blue-600', 'text-white');
+    element.classList.add('selected');
     
     selectedDate = dateStr;
     selectedTime = null;
@@ -146,15 +153,28 @@ async function loadAvailableTimes(date) {
         const data = await response.json();
         
         if (data.available_times && data.available_times.length > 0) {
-            data.available_times.forEach(time => {
+            data.available_times.forEach((time, index) => {
                 const timeButton = document.createElement('button');
-                timeButton.className = 'p-3 text-center border border-gray-300 rounded-lg hover:bg-blue-100 transition';
-                timeButton.textContent = time;
+                timeButton.className = 'time-slot p-4 text-center rounded-lg font-medium shine-effect';
+                timeButton.style.animationDelay = `${index * 0.1}s`;
+                timeButton.innerHTML = `
+                    <div class="text-sm opacity-80">⏰</div>
+                    <div class="font-semibold">${time}</div>
+                `;
                 timeButton.addEventListener('click', () => selectTime(time, timeButton));
                 timeSlots.appendChild(timeButton);
             });
+            
+            // Add fade-in animation to time slots
+            timeSlots.classList.add('fade-in-up');
         } else {
-            timeSlots.innerHTML = '<p class="col-span-3 text-center text-gray-500 p-4">Bu kun uchun mavjud vaqt yo\'q</p>';
+            timeSlots.innerHTML = `
+                <div class="col-span-3 text-center p-6">
+                    <div class="text-4xl mb-2">😔</div>
+                    <p class="text-text-light font-medium">Bu kun uchun mavjud vaqt yo'q</p>
+                    <p class="text-text-gray text-sm mt-1">Boshqa kun tanlang</p>
+                </div>
+            `;
         }
     } catch (error) {
         console.error('Error loading times:', error);
@@ -169,7 +189,13 @@ async function loadAvailableTimes(date) {
             errorMessage = 'API topilmadi. URL ni tekshiring.';
         }
         
-        timeSlots.innerHTML = `<p class="col-span-3 text-center text-red-500 p-4">${errorMessage}</p>`;
+        timeSlots.innerHTML = `
+            <div class="col-span-3 text-center p-6">
+                <div class="text-4xl mb-2">⚠️</div>
+                <p class="text-red-400 font-medium">${errorMessage}</p>
+                <p class="text-text-gray text-sm mt-1">Iltimos, qayta urinib ko'ring</p>
+            </div>
+        `;
         
         // Show error in Telegram if available
         if (tg && tg.showAlert) {
@@ -184,21 +210,24 @@ async function loadAvailableTimes(date) {
 function selectTime(time, element) {
     // Remove previous selection
     document.querySelectorAll('#time-slots button').forEach(btn => {
-        btn.classList.remove('bg-blue-600', 'text-white');
-        btn.classList.add('border-gray-300');
+        btn.classList.remove('selected');
     });
     
     // Add selection to clicked element
-    element.classList.add('bg-blue-600', 'text-white');
-    element.classList.remove('border-gray-300');
+    element.classList.add('selected');
     
     selectedTime = time;
     
-    // Update UI
+    // Update UI with animation
     document.getElementById('selected-time').textContent = time;
     
     showSelectedInfo();
     showConfirmButton();
+    
+    // Add success haptic feedback
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.HapticFeedback.selectionChanged();
+    }
 }
 
 // Show time section
@@ -214,6 +243,48 @@ function showSelectedInfo() {
 // Show confirm button
 function showConfirmButton() {
     document.getElementById('confirm-btn').style.display = 'block';
+}
+
+// Setup quick date buttons
+function setupQuickDateButtons() {
+    const todayBtn = document.getElementById('today-btn');
+    const tomorrowBtn = document.getElementById('tomorrow-btn');
+    
+    todayBtn.addEventListener('click', function() {
+        const today = new Date();
+        const dateStr = formatDate(today);
+        selectQuickDate(dateStr, 'Bugun');
+    });
+    
+    tomorrowBtn.addEventListener('click', function() {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const dateStr = formatDate(tomorrow);
+        selectQuickDate(dateStr, 'Ertaga');
+    });
+}
+
+// Select quick date (today/tomorrow)
+function selectQuickDate(dateStr, displayText) {
+    // Clear calendar selection
+    document.querySelectorAll('[data-date]').forEach(el => {
+        el.classList.remove('selected');
+    });
+    
+    selectedDate = dateStr;
+    selectedTime = null;
+    
+    // Update UI
+    document.getElementById('selected-date').textContent = displayText + ' (' + formatDateForDisplay(dateStr) + ')';
+    
+    // Load available times and show time section
+    loadAvailableTimes(dateStr);
+    showTimeSection();
+    
+    // Add haptic feedback
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.HapticFeedback.selectionChanged();
+    }
 }
 
 // Setup event listeners
