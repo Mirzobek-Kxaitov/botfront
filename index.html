@@ -285,7 +285,23 @@
                     </div>
                 </div>
 
-                <!-- Step 1: Date Selection -->
+                <!-- Step 2: Time Selection (ko'rsatiladi kun tanlangandan keyin) -->
+                <div id="time-section" class="mb-8 fade-in-up" style="display: none; animation-delay: 0.6s">
+                    <div class="text-center mb-4">
+                        <div class="text-3xl mb-2">🕐</div>
+                        <h2 class="text-xl font-semibold mb-2 text-text-light">
+                            Vaqtni tanlang
+                        </h2>
+                        <p class="text-text-gray text-sm mb-6">
+                            <span id="selected-date-display">Tanlangan kun</span> uchun mavjud vaqtlar
+                        </p>
+                    </div>
+                    <div class="bg-secondary-dark rounded-xl p-4 glass-effect">
+                        <div id="time-slots" class="grid grid-cols-3 gap-3"></div>
+                    </div>
+                </div>
+
+                <!-- Step 1: Date Selection (calendar pastga siljitildi) -->
                 <div id="date-section" class="mb-8 fade-in-up" style="animation-delay: 0.4s">
                     <h2 class="text-xl font-semibold mb-4 text-text-light flex items-center">
                         <span class="text-2xl mr-2">📅</span>
@@ -302,17 +318,6 @@
                             <div class="text-center text-xs font-semibold text-gold p-2">Ya</div>
                         </div>
                         <div id="calendar-dates" class="grid grid-cols-7 gap-1"></div>
-                    </div>
-                </div>
-
-                <!-- Step 2: Time Selection -->
-                <div id="time-section" class="mb-8 fade-in-up" style="display: none; animation-delay: 0.6s">
-                    <h2 class="text-xl font-semibold mb-4 text-text-light flex items-center">
-                        <span class="text-2xl mr-2">⏰</span>
-                        Vaqtni tanlang
-                    </h2>
-                    <div class="bg-secondary-dark rounded-xl p-4 glass-effect">
-                        <div id="time-slots" class="grid grid-cols-3 gap-3"></div>
                     </div>
                 </div>
 

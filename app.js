@@ -111,7 +111,17 @@ function selectDate(dateStr, element) {
     selectedTime = null;
     
     // Update UI
-    document.getElementById('selected-date').textContent = formatDateForDisplay(dateStr);
+    const selectedDateEl = document.getElementById('selected-date');
+    const selectedDateDisplayEl = document.getElementById('selected-date-display');
+    
+    if (selectedDateEl) {
+        selectedDateEl.textContent = formatDateForDisplay(dateStr);
+    }
+    
+    // Update time section date display
+    if (selectedDateDisplayEl) {
+        selectedDateDisplayEl.textContent = formatDateForDisplay(dateStr);
+    }
     
     // Show time selection and load available times
     loadAvailableTimes(dateStr);
@@ -232,13 +242,16 @@ function selectTime(time, element) {
 
 // Show time section
 function showTimeSection() {
-    console.log('showTimeSection called');
     const timeSection = document.getElementById('time-section');
     if (timeSection) {
         timeSection.style.display = 'block';
-        console.log('Time section shown');
-    } else {
-        console.error('time-section element not found');
+        // Smooth scroll to time section
+        setTimeout(() => {
+            timeSection.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'nearest' 
+            });
+        }, 100);
     }
 }
 
@@ -257,38 +270,26 @@ function setupQuickDateButtons() {
     const todayBtn = document.getElementById('today-btn');
     const tomorrowBtn = document.getElementById('tomorrow-btn');
     
-    console.log('Setting up quick date buttons:', todayBtn, tomorrowBtn);
-    
     if (todayBtn) {
         todayBtn.addEventListener('click', function() {
-            console.log('Today button clicked');
             const today = new Date();
             const dateStr = formatDate(today);
-            console.log('Today date:', dateStr);
             selectQuickDate(dateStr, 'Bugun');
         });
-    } else {
-        console.error('Today button not found');
     }
     
     if (tomorrowBtn) {
         tomorrowBtn.addEventListener('click', function() {
-            console.log('Tomorrow button clicked');
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
             const dateStr = formatDate(tomorrow);
-            console.log('Tomorrow date:', dateStr);
             selectQuickDate(dateStr, 'Ertaga');
         });
-    } else {
-        console.error('Tomorrow button not found');
     }
 }
 
 // Select quick date (today/tomorrow)
 function selectQuickDate(dateStr, displayText) {
-    console.log('selectQuickDate called with:', dateStr, displayText);
-    
     // Clear calendar selection
     document.querySelectorAll('[data-date]').forEach(el => {
         el.classList.remove('selected');
@@ -299,15 +300,18 @@ function selectQuickDate(dateStr, displayText) {
     
     // Update UI
     const selectedDateEl = document.getElementById('selected-date');
+    const selectedDateDisplayEl = document.getElementById('selected-date-display');
+    
     if (selectedDateEl) {
         selectedDateEl.textContent = displayText + ' (' + formatDateForDisplay(dateStr) + ')';
-        console.log('Updated selected date text');
-    } else {
-        console.error('selected-date element not found');
+    }
+    
+    // Update time section date display
+    if (selectedDateDisplayEl) {
+        selectedDateDisplayEl.textContent = displayText + ' (' + formatDateForDisplay(dateStr) + ')';
     }
     
     // Load available times and show time section
-    console.log('Loading available times for:', dateStr);
     loadAvailableTimes(dateStr);
     showTimeSection();
     
