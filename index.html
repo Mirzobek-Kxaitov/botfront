@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sartaroshxona - Bron qilish</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen p-4">
+        <div class="max-w-md mx-auto bg-white rounded-lg shadow-md">
+            <!-- Header -->
+            <div class="bg-blue-600 text-white p-6 rounded-t-lg">
+                <h1 class="text-xl font-bold text-center">✂️ Sartaroshxona</h1>
+                <p class="text-center text-blue-100 mt-1">Bron qilish tizimi</p>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6">
+                <!-- Step 1: Date Selection -->
+                <div id="date-section" class="mb-6">
+                    <h2 class="text-lg font-semibold mb-3">📅 Sanani tanlang:</h2>
+                    <div class="grid grid-cols-7 gap-1 mb-4">
+                        <div class="text-center text-sm font-medium text-gray-500 p-2">Du</div>
+                        <div class="text-center text-sm font-medium text-gray-500 p-2">Se</div>
+                        <div class="text-center text-sm font-medium text-gray-500 p-2">Cho</div>
+                        <div class="text-center text-sm font-medium text-gray-500 p-2">Pa</div>
+                        <div class="text-center text-sm font-medium text-gray-500 p-2">Ju</div>
+                        <div class="text-center text-sm font-medium text-gray-500 p-2">Sha</div>
+                        <div class="text-center text-sm font-medium text-gray-500 p-2">Ya</div>
+                    </div>
+                    <div id="calendar-dates" class="grid grid-cols-7 gap-1"></div>
+                </div>
+
+                <!-- Step 2: Time Selection -->
+                <div id="time-section" class="mb-6" style="display: none;">
+                    <h2 class="text-lg font-semibold mb-3">⏰ Vaqtni tanlang:</h2>
+                    <div id="time-slots" class="grid grid-cols-3 gap-2"></div>
+                </div>
+
+                <!-- Selected Info -->
+                <div id="selected-info" class="bg-gray-100 p-4 rounded-lg mb-6" style="display: none;">
+                    <h3 class="font-semibold mb-2">Tanlangan ma'lumotlar:</h3>
+                    <p class="text-sm"><span class="font-medium">Sana:</span> <span id="selected-date"></span></p>
+                    <p class="text-sm"><span class="font-medium">Vaqt:</span> <span id="selected-time"></span></p>
+                </div>
+
+                <!-- Confirm Button -->
+                <button id="confirm-btn" class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition" style="display: none;">
+                    ✅ Bron qilishni tasdiqlash
+                </button>
+
+                <!-- Loading -->
+                <div id="loading" class="text-center py-8" style="display: none;">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                    <p class="text-gray-500 mt-2">Yuklanmoqda...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
