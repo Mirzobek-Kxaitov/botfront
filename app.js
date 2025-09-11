@@ -5,7 +5,7 @@ tg.expand();
 // Global variables
 let selectedDate = null;
 let selectedTime = null;
-const API_BASE_URL = 'http://overluscious-unbusily-ralph.ngrok-free.app'; // Production da o'zgartiriladi
+const API_BASE_URL = 'https://overluscious-unbusily-ralph.ngrok-free.app'; // Production da o'zgartiriladi
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
@@ -132,7 +132,17 @@ async function loadAvailableTimes(date) {
     timeSlots.innerHTML = '';
     
     try {
-        const response = await fetch(`${API_BASE_URL}/available-times/${date}`);
+        const response = await fetch(`${API_BASE_URL}/available-times/${date}`, {
+            headers: {
+                'ngrok-skip-browser-warning': 'true',
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         
         if (data.available_times && data.available_times.length > 0) {
@@ -148,7 +158,23 @@ async function loadAvailableTimes(date) {
         }
     } catch (error) {
         console.error('Error loading times:', error);
-        timeSlots.innerHTML = '<p class="col-span-3 text-center text-red-500 p-4">Xatolik yuz berdi</p>';
+        console.error('API URL:', `${API_BASE_URL}/available-times/${date}`);
+        
+        let errorMessage = 'Xatolik yuz berdi';
+        if (error.message.includes('Failed to fetch')) {
+            errorMessage = 'Serverga ulanib bo\'lmadi. Internet aloqasini tekshiring.';
+        } else if (error.message.includes('500')) {
+            errorMessage = 'Server xatoligi. Iltimos, keyinroq urinib ko\'ring.';
+        } else if (error.message.includes('404')) {
+            errorMessage = 'API topilmadi. URL ni tekshiring.';
+        }
+        
+        timeSlots.innerHTML = `<p class="col-span-3 text-center text-red-500 p-4">${errorMessage}</p>`;
+        
+        // Show error in Telegram if available
+        if (tg && tg.showAlert) {
+            tg.showAlert(`Xatolik: ${error.message}`);
+        }
     } finally {
         loading.style.display = 'none';
     }
