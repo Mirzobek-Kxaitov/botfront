@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     generateCalendar();
     setupEventListeners();
     setupQuickDateButtons();
+    setupAdminPanel();
 });
 
 // Generate calendar for current and next month
@@ -353,12 +354,193 @@ function confirmBooking() {
         tg.showAlert('Iltimos, sana va vaqtni tanlang!');
         return;
     }
-    
+
     const bookingData = {
         date: selectedDate,
         time: selectedTime
     };
-    
+
     // Send data to Telegram bot
     tg.sendData(JSON.stringify(bookingData));
+}
+
+// Admin panel functionality
+function setupAdminPanel() {
+    const adminBtn = document.getElementById('admin-btn');
+    const adminPanel = document.getElementById('admin-panel');
+    const closeAdminBtn = document.getElementById('close-admin-btn');
+    const loadBookingsBtn = document.getElementById('load-bookings-btn');
+    const adminDate = document.getElementById('admin-date');
+
+    // Set default date to today
+    if (adminDate) {
+        const today = new Date();
+        adminDate.value = formatDate(today);
+    }
+
+    // Show admin panel
+    if (adminBtn) {
+        adminBtn.addEventListener('click', function() {
+            // Simple admin authentication
+            const password = prompt('Admin parolini kiriting:');
+            if (password === 'admin123') { // Simple password check
+                showAdminPanel();
+            } else {
+                tg.showAlert('Noto\'g\'ri parol!');
+            }
+        });
+    }
+
+    // Close admin panel
+    if (closeAdminBtn) {
+        closeAdminBtn.addEventListener('click', function() {
+            hideAdminPanel();
+        });
+    }
+
+    // Load bookings for selected date
+    if (loadBookingsBtn) {
+        loadBookingsBtn.addEventListener('click', function() {
+            const selectedDate = adminDate.value;
+            if (selectedDate) {
+                loadBookingsForDate(selectedDate);
+            } else {
+                tg.showAlert('Iltimos, sanani tanlang!');
+            }
+        });
+    }
+}
+
+function showAdminPanel() {
+    const adminPanel = document.getElementById('admin-panel');
+    const dateSection = document.getElementById('date-section');
+    const quickDateSection = document.getElementById('quick-date-section');
+    const timeSection = document.getElementById('time-section');
+    const selectedInfo = document.getElementById('selected-info');
+    const confirmBtn = document.getElementById('confirm-btn');
+
+    // Hide booking sections
+    if (dateSection) dateSection.style.display = 'none';
+    if (quickDateSection) quickDateSection.style.display = 'none';
+    if (timeSection) timeSection.style.display = 'none';
+    if (selectedInfo) selectedInfo.style.display = 'none';
+    if (confirmBtn) confirmBtn.style.display = 'none';
+
+    // Show admin panel
+    if (adminPanel) {
+        adminPanel.style.display = 'block';
+    }
+}
+
+function hideAdminPanel() {
+    const adminPanel = document.getElementById('admin-panel');
+    const dateSection = document.getElementById('date-section');
+    const quickDateSection = document.getElementById('quick-date-section');
+
+    // Show booking sections
+    if (dateSection) dateSection.style.display = 'block';
+    if (quickDateSection) quickDateSection.style.display = 'block';
+
+    // Hide admin panel
+    if (adminPanel) {
+        adminPanel.style.display = 'none';
+    }
+}
+
+async function loadBookingsForDate(date) {
+    const bookingsList = document.getElementById('bookings-list');
+    const loadBookingsBtn = document.getElementById('load-bookings-btn');
+
+    try {
+        // Show loading
+        if (loadBookingsBtn) {
+            loadBookingsBtn.textContent = '⏳ Yuklanmoqda...';
+            loadBookingsBtn.disabled = true;
+        }
+
+        if (bookingsList) {
+            bookingsList.innerHTML = '<div class="text-center text-text-gray py-4">Yuklanmoqda...</div>';
+        }
+
+        // Fetch bookings from API
+        const response = await fetch(`${API_BASE_URL}/bookings/${date}`, {
+            headers: {
+                'ngrok-skip-browser-warning': 'true'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Ma\'lumotlarni yuklashda xatolik');
+        }
+
+        const bookings = await response.json();
+        displayBookings(bookings, date);
+
+    } catch (error) {
+        console.error('Error loading bookings:', error);
+        if (bookingsList) {
+            bookingsList.innerHTML = `
+                <div class="text-center text-red-400 py-4">
+                    <div class="text-2xl mb-2">❌</div>
+                    <div>Xatolik: ${error.message}</div>
+                </div>
+            `;
+        }
+    } finally {
+        // Reset button
+        if (loadBookingsBtn) {
+            loadBookingsBtn.textContent = '📊 Bronlarni yuklash';
+            loadBookingsBtn.disabled = false;
+        }
+    }
+}
+
+function displayBookings(bookings, date) {
+    const bookingsList = document.getElementById('bookings-list');
+
+    if (!bookingsList) return;
+
+    const formattedDate = formatDateForDisplay(date);
+
+    if (!bookings || bookings.length === 0) {
+        bookingsList.innerHTML = `
+            <div class="text-center text-text-gray py-8">
+                <div class="text-3xl mb-2">📅</div>
+                <div class="text-lg font-medium mb-2">${formattedDate}</div>
+                <div>Bu sanada hech qanday bron yo'q</div>
+            </div>
+        `;
+        return;
+    }
+
+    let bookingsHtml = `
+        <div class="text-center mb-4">
+            <div class="text-lg font-semibold text-text-light">${formattedDate}</div>
+            <div class="text-text-gray">Jami ${bookings.length} ta bron</div>
+        </div>
+    `;
+
+    bookings.forEach((booking, index) => {
+        bookingsHtml += `
+            <div class="glass-effect p-4 rounded-xl border border-gold/20">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-full bg-gold text-primary-dark flex items-center justify-center font-bold text-sm">
+                            ${index + 1}
+                        </div>
+                        <div>
+                            <div class="text-text-light font-medium">${booking.user_name || 'Noma\'lum'}</div>
+                            <div class="text-text-gray text-sm">${booking.user_phone || 'Telefon ko\'rsatilmagan'}</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-gold font-bold">${booking.time}</div>
+                        <div class="text-text-gray text-xs">ID: ${booking.id}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    bookingsList.innerHTML = bookingsHtml;
 }
