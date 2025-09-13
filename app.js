@@ -14,9 +14,11 @@ if (tg.themeParams) {
 let selectedDate = null;
 let selectedTime = null;
 const API_BASE_URL = 'https://172b092a207c.ngrok-free.app'; // Ngrok tunnel
+let isAdmin = false; // Admin status
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
+    checkAdminStatus();
     generateCalendar();
     setupEventListeners();
     setupQuickDateButtons();
@@ -364,9 +366,45 @@ function confirmBooking() {
     tg.sendData(JSON.stringify(bookingData));
 }
 
+// Check admin status (simple method - can be improved with backend check)
+function checkAdminStatus() {
+    // Check if admin flag is stored in localStorage or URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdminParam = urlParams.get('admin');
+    const storedAdmin = localStorage.getItem('isAdmin');
+
+    // Check Telegram user ID for admin (you can add specific admin IDs here)
+    let telegramUserId = null;
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+        telegramUserId = window.Telegram.WebApp.initDataUnsafe.user?.id;
+    }
+
+    // Admin detection logic
+    isAdmin = (
+        isAdminParam === 'true' ||
+        storedAdmin === 'true' ||
+        telegramUserId === 123456789 || // Replace with actual admin Telegram ID
+        telegramUserId === 987654321    // Replace with actual admin Telegram ID
+    );
+
+    // Show/hide admin buttons based on status
+    updateAdminButtonsVisibility();
+}
+
+function updateAdminButtonsVisibility() {
+    const mijozlarBtn = document.getElementById('mijozlar-btn');
+
+    if (isAdmin && mijozlarBtn) {
+        mijozlarBtn.style.display = 'block';
+    } else if (mijozlarBtn) {
+        mijozlarBtn.style.display = 'none';
+    }
+}
+
 // Admin panel functionality
 function setupAdminPanel() {
     const adminBtn = document.getElementById('admin-btn');
+    const mijozlarBtn = document.getElementById('mijozlar-btn');
     const adminPanel = document.getElementById('admin-panel');
     const closeAdminBtn = document.getElementById('close-admin-btn');
     const loadBookingsBtn = document.getElementById('load-bookings-btn');
@@ -378,15 +416,30 @@ function setupAdminPanel() {
         adminDate.value = formatDate(today);
     }
 
-    // Show admin panel
+    // Show admin panel with password check
     if (adminBtn) {
         adminBtn.addEventListener('click', function() {
             // Simple admin authentication
             const password = prompt('Admin parolini kiriting:');
-            if (password === 'admin123') { // Simple password check
+            if (password === 'admin123') {
+                // Set admin status and update visibility
+                isAdmin = true;
+                localStorage.setItem('isAdmin', 'true');
+                updateAdminButtonsVisibility();
                 showAdminPanel();
             } else {
                 tg.showAlert('Noto\'g\'ri parol!');
+            }
+        });
+    }
+
+    // Direct access to admin panel for authenticated admins
+    if (mijozlarBtn) {
+        mijozlarBtn.addEventListener('click', function() {
+            if (isAdmin) {
+                showAdminPanel();
+            } else {
+                tg.showAlert('Admin huquqingiz yo\'q!');
             }
         });
     }
